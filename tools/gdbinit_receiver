@@ -1,0 +1,4 @@
+file receiver
+set args outfile
+break main
+run
