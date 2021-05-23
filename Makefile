@@ -1,13 +1,13 @@
-all: send recv
+all: bin/send bin/recv
 
-send: debug.hpp send.cpp
-	g++ -Wall -g send.cpp -o $@
+bin/send: src/send.cpp include/Socket.hpp include/Timer.hpp include/Packet.hpp
+	g++ -Wall -g -Iinclude src/send.cpp -o $@
 
-recv: debug.hpp recv.cpp
-	g++ -Wall -g recv.cpp -o $@
+bin/recv: src/recv.cpp include/Socket.hpp include/Timer.hpp include/Packet.hpp
+	g++ -Wall -g -Iinclude src/recv.cpp -o $@
 
 clean: 
-	rm sender receiver
+	rm bin/*
 sender: sender.cpp FileSender.hpp RDTSender.hpp Protocol.hpp Timer.hpp
 	g++ -Wall -g sender.cpp -o $@
 receiver: receiver.cpp FileReceiver.hpp RDTReceiver.hpp Protocol.hpp Timer.hpp

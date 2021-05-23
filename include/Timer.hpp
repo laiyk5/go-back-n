@@ -1,19 +1,16 @@
 #ifndef TIMER_HPP
 #define TIMER_HPP
 
-#include "gbn.hpp"
-// #include <cstdio>
-// #include <sys/time.h>
-// #include <cstddef>
+#include <cstdio>
+#include <sys/time.h>
+#include <cstddef>
 
 // timer with fix timeout interval TIMEOUT
 class Timer{
 private:
     double time;
-    // double timeout;
 public:
     Timer() 
-    // : timeout(0)
     {; }
 
     void start(){
@@ -22,10 +19,10 @@ public:
     void stop(){
         time = 0;
     }
-    bool istimeout()
+    bool timeout(double tol)
     {
         double interval = get_time() - time;
-        if(time != 0 && interval > TIMEOUT){
+        if(time != 0 && interval > tol){
             printf("timeout! %f (s) \n", interval);
             return true;
         }
