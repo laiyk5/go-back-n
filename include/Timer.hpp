@@ -10,7 +10,7 @@ class Timer{
 private:
     double time;
 public:
-    Timer() 
+    Timer():time(0)
     {; }
 
     void start(){

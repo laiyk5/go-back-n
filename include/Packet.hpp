@@ -48,6 +48,10 @@ public:
             default: perror("show: flags 2"); exit(-1); break;
         }
     }
+
+    int get_datasize(){
+        return size - HEADLEN;
+    }
 };
 
 

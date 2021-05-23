@@ -64,9 +64,9 @@ void Socket::send(void *pkt, int size)
 
 int Socket::recv_from(void *pkt, int maxsize){
     int size = 0;
-    if(-1 == (size = recvfrom(sock, pkt, maxsize, 0, (struct sockaddr *)&recvaddr, &recvaddrsize))){
-        perror("recvfrom");
-        exit(-1);
+    if(-1 == (size = ::recvfrom(sock, pkt, maxsize, MSG_DONTWAIT, (struct sockaddr *)&recvaddr, &recvaddrsize))){
+        // perror("recvfrom");
+		return size;
     }else{
         printf("PKT RECV, REMOTE INFO:\n");
         printName(recvaddr);
@@ -76,9 +76,9 @@ int Socket::recv_from(void *pkt, int maxsize){
 
 int Socket::recv(void *pkt, int maxsize){
     int size = 0;
-    if(-1 == (size = ::recv(sock, pkt, maxsize, 0))){
-        perror("recv");
-        exit(-1);
+    if(-1 == (size = ::recv(sock, pkt, maxsize, MSG_DONTWAIT))){
+        //perror("recv");
+        //exit(-1);
     }else{
         printf("PKT ACKED\n");
     }

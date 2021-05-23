@@ -1,4 +1,4 @@
-file sender
+file bin/send
 set args "sender.c" "127.0.0.1"
 break main
-r
+run

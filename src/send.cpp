@@ -1,7 +1,3 @@
-#define CHUNKSIZE 10
-#define SENDPORT 12346
-#define RECVPORT 12347
-
 // SYSTEM
 #include <unistd.h>
 #include <sys/time.h>
@@ -23,79 +19,31 @@
 #include <arpa/inet.h>
 
 
+#define TIMEOUT 0.07
+#define SENDPORT (IPPORT_USERRESERVED + 1)
+#define RECVPORT (IPPORT_USERRESERVED + 2)
 
 #include "Socket.hpp"
 #include "Packet.hpp"
 #include "Timer.hpp"
+#include "StopNWait.hpp"
 
-#define TIMEOUT 0.07
-
+#define CHUNKSIZE 20
 int main(int argc, char *argv[]){
-	printf("Usage: send hostname\n");
-    // init sock
-    Socket sock;
+	printf("Usage: send infilename destip\n");
+    
+    StopNWaitComm sender(argv[2], RECVPORT);
+    FILE * infile = fopen(argv[1], "r");
 
-    int data = 0;
-    int datasize = sizeof(int);
-
-    Timer timer;
-    Packet sendpkt;
-    Packet recvpkt;
-
-    int state = 0;
-    int seq = 0;
-
-    // REMOTE
-    sock.set_remote(argv[1], RECVPORT);
-
-    // connect
-    sendpkt.set(seq, 0, SYN, &data, datasize);
-    sock.send(&sendpkt, sendpkt.size);
-    sendpkt.show("-->");
-    timer.start();
-
-    // recv ack -- stop-and-wait for ack
-    while(true){
-        recvpkt.size = sock.recv(&recvpkt, MAX_PKTSIZE);
-        if((-1 != recvpkt.size)
-            && (recvpkt.flags & ACK) 
-            && (recvpkt.ack == seq)){
-            recvpkt.show("<--");
-            seq++;
-            timer.stop();
-            break;
-        }
-        if(timer.timeout(TIMEOUT)){
-            // resend
-            sock.send(&sendpkt, sendpkt.size);
-            sendpkt.show("RE-->");
-            timer.start();
-        }
+    sender.connect();
+    char buffer[CHUNKSIZE+10];
+    int buffersize;
+    while(0 == feof(infile)){
+        buffersize = fread(buffer, 1, CHUNKSIZE, infile);
+        printf("%d %s|\n", buffersize, buffer);
+        sender.send(buffer, buffersize);
     }
+    sender.disconnect();
 
-    for(int i = 0; i < 10; i++){
-        // send pkt with seq 1 2 3 ... 
-        sendpkt.set(seq, 0, DATA, &data, datasize);
-        sock.send(&sendpkt, sendpkt.size);
-        sendpkt.show("-->");
-        timer.start();
-        // recv ack -- stop-and-wait for ack
-        while(true){
-            recvpkt.size = sock.recv(&recvpkt, MAX_PKTSIZE);
-            if((-1 != recvpkt.size)
-                && (recvpkt.flags & ACK)
-                && (recvpkt.ack == seq)){
-                recvpkt.show("<--");
-                seq++;
-                timer.stop();
-                break;
-            }
-            if(timer.timeout(TIMEOUT)){
-                // resend
-                sock.send(&sendpkt, sendpkt.size);
-                sendpkt.show("RE-->");
-                timer.start();
-            }
-        }
-    }
+    fclose(infile);
 }

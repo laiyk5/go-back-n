@@ -26,9 +26,9 @@ void TestUDTComm(){
 }
 
 int main(int argc, char * argv[]){
-    // if(argc != 3){
-    //     std::cerr << "args: filename ip" << std::endl;
-    // }
+    if(argc != 3){
+        std::cerr << "args: filename ip" << std::endl;
+    }
     TestUDTComm();
     // FileSender FS;
     // // send file "filename" to host "ip"

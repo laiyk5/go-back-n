@@ -1,4 +1,7 @@
 #include "gbn.hpp"
+#include "FileSender.hpp"
+#include <cstdlib>
+#include <iostream>
 
 void printSockName(UDTComm &udt)
 {
@@ -15,19 +18,19 @@ void printSockName(UDTComm &udt)
 }
 
 void TestUDTComm(){
-    UDTComm udt("0.0.0.0", RECVPORT);
+    UDTComm udt("127.0.0.1", SENDPORT);
+    udt.set_recv("127.0.0.1", RECVPORT);
     printSockName(udt);
-    int a;
-    int size;
-    size = recv(udt.sock, &a, sizeof(int), 0);
-    printf("a = %d, size = %d\n", a, size);
+    int a = 127;
+    udt.send(&a, sizeof(a));
 }
+
 int main(int argc, char * argv[]){
-    // if(argc != 2){
-    //     std::cerr << "args: filename" << std::endl;
-    // }
+    if(argc != 3){
+        std::cerr << "args: filename ip" << std::endl;
+    }
     TestUDTComm();
-    // FileReceiver FR;
-    // // receive file and store it in file "filename"
-    // FR.receive_file(argv[1]);
+    // FileSender FS;
+    // // send file "filename" to host "ip"
+    // FS.send_file(argv[1], argv[2]);
 }

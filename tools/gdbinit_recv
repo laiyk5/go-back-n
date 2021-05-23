@@ -1,4 +1,4 @@
-file receiver
+file bin/recv
 set args outfile
 break main
 run
